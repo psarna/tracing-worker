@@ -17,11 +17,12 @@ impl<S: tracing::Subscriber> tracing_subscriber::Layer<S> for WorkerLayer {
         if event.metadata().level() > &self.level {
             return;
         }
+        let date = worker::Date::now().to_string();
         let level = event.metadata().level();
         let target = event.metadata().target();
         let name = event.metadata().name();
         let fields = event.metadata().fields();
-        worker::console_log!("[{level}] [{target}] [{name}] {fields}");
+        worker::console_log!("{date}: [{level}] [{target}] [{name}] {fields}");
     }
 }
 
@@ -38,7 +39,7 @@ pub fn init(env: &worker::Env) {
             .parse::<tracing::Level>()
             .unwrap_or(tracing::Level::INFO);
         let subscriber = tracing_subscriber::registry()
-            .with(tracing_subscriber::fmt::layer())
+            .with(tracing_subscriber::fmt::layer().without_time())
             .with(WorkerLayer::new(level));
         tracing::subscriber::set_global_default(subscriber).unwrap();
     });
