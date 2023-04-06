@@ -1,10 +1,11 @@
 [package]
 name = "tracing-worker"
-version = "0.1.0"
+version = "0.1.2"
 edition = "2021"
 license = "Apache-2.0"
 description = "tracing-subscriber implementation for Cloudflare Workers worker crate"
 keywords = ["tracing", "worker", "workers", "cloudflare", "subscriber"]
+repository = "https://github.com/psarna/tracing-worker"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

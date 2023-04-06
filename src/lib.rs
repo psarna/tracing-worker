@@ -27,11 +27,11 @@ impl<S: tracing::Subscriber> tracing_subscriber::Layer<S> for WorkerLayer {
 
 static INIT: std::sync::Once = std::sync::Once::new();
 
-pub fn init<D>(ctx: &worker::RouteContext<D>) {
+pub fn init<D>(env: &worker::Env) {
     use tracing_subscriber::prelude::*;
 
     INIT.call_once(|| {
-        let level = ctx
+        let level = env
             .secret("RUST_LOG")
             .map(|s| s.to_string())
             .unwrap_or("info".to_string())
