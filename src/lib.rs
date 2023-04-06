@@ -21,7 +21,11 @@ impl<S: tracing::Subscriber> tracing_subscriber::Layer<S> for WorkerLayer {
         let level = event.metadata().level();
         let target = event.metadata().target();
         let name = event.metadata().name();
-        let fields = event.metadata().fields();
+        let fields = event
+            .fields()
+            .map(|field| format!("{}={:?}", field.name(), field))
+            .collect::<Vec<_>>()
+            .join(", ");
         worker::console_log!("{date}: [{level}] [{target}] [{name}] {fields}");
     }
 }
