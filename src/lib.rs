@@ -41,7 +41,7 @@ impl<S: tracing::Subscriber> tracing_subscriber::Layer<S> for WorkerLayer {
             string: &mut fields,
         };
         event.record(&mut fields_visitor);
-        worker::console_log!("{date} {level:>5} {name}: {fields} ({target})");
+        worker::console_log!("{date} {level:>5} {target}: {fields} ({name})");
     }
 }
 
