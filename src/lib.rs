@@ -8,6 +8,17 @@ impl WorkerLayer {
     }
 }
 
+pub struct StringVisitor<'a> {
+    string: &'a mut String,
+}
+
+impl<'a> tracing::field::Visit for StringVisitor<'a> {
+    fn record_debug(&mut self, field: &tracing::field::Field, value: &dyn std::fmt::Debug) {
+        use std::fmt::Write;
+        write!(self.string, "{} = {:?}; ", field.name(), value).unwrap();
+    }
+}
+
 impl<S: tracing::Subscriber> tracing_subscriber::Layer<S> for WorkerLayer {
     fn on_event(
         &self,
@@ -21,12 +32,12 @@ impl<S: tracing::Subscriber> tracing_subscriber::Layer<S> for WorkerLayer {
         let level = event.metadata().level();
         let target = event.metadata().target();
         let name = event.metadata().name();
-        let fields = event
-            .fields()
-            .map(|field| format!("{}={:?}", field.name(), field))
-            .collect::<Vec<_>>()
-            .join(", ");
-        worker::console_log!("{date}: [{level}] [{target}] [{name}] {fields}");
+        let mut fields = String::new();
+        let mut fields_visitor = StringVisitor {
+            string: &mut fields,
+        };
+        event.record(&mut fields_visitor);
+        worker::console_log!("{name} {date}: [{level}] [{target}] {fields}");
     }
 }
 
