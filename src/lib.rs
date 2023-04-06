@@ -27,7 +27,7 @@ impl<S: tracing::Subscriber> tracing_subscriber::Layer<S> for WorkerLayer {
 
 static INIT: std::sync::Once = std::sync::Once::new();
 
-pub fn init<D>(env: &worker::Env) {
+pub fn init(env: &worker::Env) {
     use tracing_subscriber::prelude::*;
 
     INIT.call_once(|| {
