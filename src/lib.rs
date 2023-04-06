@@ -15,7 +15,11 @@ pub struct StringVisitor<'a> {
 impl<'a> tracing::field::Visit for StringVisitor<'a> {
     fn record_debug(&mut self, field: &tracing::field::Field, value: &dyn std::fmt::Debug) {
         use std::fmt::Write;
-        write!(self.string, "{} = {:?}; ", field.name(), value).unwrap();
+        if field.name() == "message" {
+            write!(self.string, "{:?}", value).ok();
+        } else {
+            write!(self.string, "{} = {:?}; ", field.name(), value).ok();
+        }
     }
 }
 
@@ -37,7 +41,7 @@ impl<S: tracing::Subscriber> tracing_subscriber::Layer<S> for WorkerLayer {
             string: &mut fields,
         };
         event.record(&mut fields_visitor);
-        worker::console_log!("{name} {date}: [{level}] [{target}] {fields}");
+        worker::console_log!("{date} {level:>5} {name}: {fields} ({target})");
     }
 }
 
